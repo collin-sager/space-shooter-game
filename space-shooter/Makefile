@@ -93,24 +93,37 @@ depend:
 # ---------------------------
 # Run (keeps SFML runtime libs in vendor/sfml/...; no copying required)
 # ---------------------------
+# ---------------------------
+# Run (keeps SFML runtime libs in vendor/sfml/...; no copying required)
+# ---------------------------
 ifeq ($(OS),Windows_NT)
-	# Avoid PATH breakage from C:/... by converting to /c/... form
-	SFML_BIN_POSIX := $(shell cygpath -u "$(CURDIR)/$(SFML_BIN)")
-	run: $(TARGET)
-		@echo Running $(TARGET) with SFML DLLs from $(SFML_BIN)
-		@PATH="$(SFML_BIN_POSIX):$$PATH" ./$(TARGET)
+
+# Avoid PATH breakage from C:/... by converting to /c/... form
+SFML_BIN_POSIX := $(shell cygpath -u "$(CURDIR)/$(SFML_BIN)")
+
+run: $(TARGET)
+	@echo Running $(TARGET) with SFML DLLs from $(SFML_BIN)
+	@PATH="$(SFML_BIN_POSIX):$$PATH" ./$(TARGET)
+
 else ifeq ($(UNAME_S),Linux)
-	run: $(TARGET)
-		@echo Running $(TARGET) with SFML libs from $(LIB_PATH)
-		@LD_LIBRARY_PATH="$(LIB_PATH):$$LD_LIBRARY_PATH" ./$(TARGET)
+
+run: $(TARGET)
+	@echo Running $(TARGET) with SFML libs from $(LIB_PATH)
+	@LD_LIBRARY_PATH="$(LIB_PATH):$$LD_LIBRARY_PATH" ./$(TARGET)
+
 else ifeq ($(UNAME_S),Darwin)
-	run: $(TARGET)
-		@echo Running $(TARGET) with SFML libs from $(LIB_PATH)
-		@DYLD_LIBRARY_PATH="$(LIB_PATH):$$DYLD_LIBRARY_PATH" ./$(TARGET)
+
+run: $(TARGET)
+	@echo Running $(TARGET) with SFML libs from $(LIB_PATH)
+	@DYLD_LIBRARY_PATH="$(LIB_PATH):$$DYLD_LIBRARY_PATH" ./$(TARGET)
+
 else
-	run:
-		@echo "Unsupported platform for 'run' target. Build with: make build"
+
+run:
+	@echo "Unsupported platform for 'run' target. Build with: make build"
+
 endif
+
 
 .PHONY: all build run clean depend
 
