@@ -5,7 +5,7 @@ This project is a small Asteroids-style game written in C++ using SFML. Clone re
   <img src="space-shooter/assets/screenshots/gameplay.PNG" width="450">
 </p>
 
-## Requirements
+### Requirements
 
 - C++ compiler (g++ recommended)
 - `make`
@@ -39,35 +39,28 @@ No Makefile edits are required.
         │   └── sfml/
         │       ├── windows-mingw64/
         │       ├── linux-x86_64/
-        │       ├── macos-x86_64/
         │       └── macos-arm64/
         └── Makefile
 
----
-
-Windows (MinGW / g++)
+### Windows (MinGW / g++)
 1. Extract the SFML zip.
 2. Copy the contents:
    ```text
     SFML-2.6.x/include/ -> space-shooter/vendor/sfml/windows-mingw64/include/
     SFML-2.6.x/lib/     -> space-shooter/vendor/sfml/windows-mingw64/lib/
     SFML-2.6.x/bin/     -> space-shooter/vendor/sfml/windows-mingw64/bin/
----
-
-<u>Linux
-1. Extract the SFML archive.
-2. Copy the contents:
-   ```text
-    SFML-2.6.x/include/ -> space-shooter/vendor/sfml/linux-x86_64/include/
-    SFML-2.6.x/lib/     -> space-shooter/vendor/sfml/linux-x86_64/lib/
----
-
-macOS
+### macOS
 1. Extract the SFML archive.
 2. Copy the contents:
    ```text
     SFML-2.6.x/include/ -> space-shooter/vendor/sfml/macos-arm64/include/
     SFML-2.6.x/lib/     -> space-shooter/vendor/sfml/macos-arm64/lib/
+### Linux
+1. Extract the SFML archive.
+2. Copy the contents:
+   ```text
+    SFML-2.6.x/include/ -> space-shooter/vendor/sfml/linux-x86_64/include/
+    SFML-2.6.x/lib/     -> space-shooter/vendor/sfml/linux-x86_64/lib/
 ---
 
 # 3. Build and Run
