@@ -72,7 +72,7 @@ macOS
 
 # 3. Build and Run
 
-From the project root:
+Run these commands in the terminal from project root:
 
     make build   # compiles the game
     make run     # runs the game
