@@ -9,11 +9,15 @@
 using namespace std;
 using namespace sf;
 
+namespace {
+    const string FONT_PATH = "assets/fonts/arcade1.ttf";
+    const string SCORE_FILE = "data/scores.txt";
+}
 
 GameDisplay::GameDisplay()
 {
     // load font, throw error if not found
-    if (!myFont.loadFromFile("data/arcade1.ttf")) // load font
+    if (!myFont.loadFromFile(FONT_PATH)) // load font
         cout << "Couldn't load font" << endl; 
 
     // initialize booleans to...
@@ -223,7 +227,7 @@ void GameDisplay::readAndDisplayScores(sf::RenderWindow &window) {
     if(_scoreboardUpdated) {
 
         // open file for reading
-        _fileName = "scores.txt";
+        _fileName = SCORE_FILE;
         _fileIn.open(_fileName);
         if(!_fileIn.is_open()) {
             cout << "Could not open " << _fileName << " for reading" << endl;
@@ -329,7 +333,7 @@ void GameDisplay::readAndDisplayScores(sf::RenderWindow &window) {
 void GameDisplay::writeToScoreFile(string name, int score) {
 
     // write players new score to file
-    _fileName = "scores.txt";
+    _fileName = SCORE_FILE;
     _fileOut.open(_fileName, ios_base::app); // APPEND not rewrite
 
     // make sure file can open

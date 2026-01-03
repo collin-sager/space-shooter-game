@@ -1,7 +1,10 @@
 # THE NAME OF YOUR EXECUTABLE
 TARGET = asteroids
+# PROJECT LAYOUT
+SRC_DIR = src
+INC_DIR = include
 # ALL CPP COMPILABLE IMPLEMENTATION FILES THAT MAKE UP THE PROJECT
-SRC_FILES = main.cpp game.cpp kinematics.cpp spaceship.cpp asteroid.cpp gamedisplay.cpp bullet.cpp
+SRC_FILES = $(addprefix $(SRC_DIR)/, main.cpp game.cpp kinematics.cpp spaceship.cpp asteroid.cpp gamedisplay.cpp bullet.cpp)
 
 # NO EDITS NEEDED BELOW THIS LINE
 
@@ -17,7 +20,7 @@ ifeq ($(OS),Windows_NT)
 	DEL = rm -f
 	Q =
 
-	INC_PATH = C:/mingw64/mingw64/include
+	SYS_INC_PATH = C:/mingw64/mingw64/include
 	LIB_PATH = Z:/CSCI200/lib/
 
 	ARCH = 
@@ -26,7 +29,7 @@ else
 	DEL = rm -f
 	Q = "
 
-	INC_PATH = /usr/local/include/
+	SYS_INC_PATH = /usr/local/include/
 	LIB_PATH = /usr/local/lib/
 
 	UNAME_S := $(shell uname -s)
@@ -52,6 +55,7 @@ else
 	endif
 endif
 
+INCLUDE_FLAGS = -I$(SYS_INC_PATH) -I$(INC_DIR)
 LIBS = -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio -lsfml-network
 
 all: $(TARGET)
@@ -60,7 +64,7 @@ $(TARGET): $(OBJECTS)
 	$(CXX) $(ARCH) -o $@ $^ $(RPATH) -L$(LIB_PATH) $(LIBS)
 
 .cpp.o:
-	$(CXX) $(CXXFLAGS) $(ARCH) $(CXXVERSION) -o $@ -c $< -I$(INC_PATH)
+	$(CXX) $(CXXFLAGS) $(ARCH) $(CXXVERSION) -o $@ -c $< $(INCLUDE_FLAGS)
 
 clean:
 	$(DEL) $(TARGET) $(OBJECTS)
@@ -69,9 +73,9 @@ depend:
 	@sed -i.bak '/^# DEPENDENCIES/,$$d' Makefile
 	@$(DEL) sed*
 	@echo $(Q)# DEPENDENCIES$(Q) >> Makefile
-	@$(CXX) -MM $(SRC_FILES) >> Makefile
+	@$(CXX) -MM $(SRC_FILES) $(INCLUDE_FLAGS) >> Makefile
 
 .PHONY: all clean depend
 
 # DEPENDENCIES
-main.o: main.cpp 
+src/main.o: src/main.cpp 
