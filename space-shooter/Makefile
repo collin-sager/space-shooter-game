@@ -1,83 +1,85 @@
 # THE NAME OF YOUR EXECUTABLE
 TARGET = asteroids
+
 # PROJECT LAYOUT
 SRC_DIR = src
 INC_DIR = include
+
 # ALL CPP COMPILABLE IMPLEMENTATION FILES THAT MAKE UP THE PROJECT
 SRC_FILES = $(addprefix $(SRC_DIR)/, main.cpp game.cpp kinematics.cpp spaceship.cpp asteroid.cpp gamedisplay.cpp bullet.cpp)
+OBJECTS   = $(SRC_FILES:.cpp=.o)
 
-# SFML
+# SFML (vendored under vendor/sfml/<platform>/...)
 SFML_VENDOR := vendor/sfml
 
 # NO EDITS NEEDED BELOW THIS LINE
-
 CXX = g++
 CXXFLAGS = -Wall -Wextra -Werror -pedantic-errors
 CXXFLAGS_DEBUG = -g
 CXXVERSION = -std=c++17
 
-OBJECTS = $(SRC_FILES:.cpp=.o)
+DEL = rm -f
+RPATH =
+ARCH =
+
+# ---------------------------
+# Detect OS / platform folder
+# ---------------------------
+UNAME_S := $(shell uname -s 2>/dev/null)
+UNAME_M := $(shell uname -m 2>/dev/null)
 
 ifeq ($(OS),Windows_NT)
-	TARGET := $(TARGET).exe
-	DEL = rm -f
-	Q =
-
-	# Prefer SFML vendored next to the project
-	ifneq ("$(wildcard $(SFML_VENDOR)/include)","")
-		INC_PATH := $(SFML_VENDOR)/include
-		LIB_PATH := $(SFML_VENDOR)/lib
+	SFML_PLATFORM := windows-mingw64
+else ifeq ($(UNAME_S),Linux)
+	SFML_PLATFORM := linux-x86_64
+else ifeq ($(UNAME_S),Darwin)
+	ifeq ($(UNAME_M),arm64)
+		SFML_PLATFORM := macos-arm64
 	else
-		# Fallback if user didn't vendor SFML (MSYS2 default, optional)
+		SFML_PLATFORM := macos-x86_64
+	endif
+else
+	SFML_PLATFORM := unknown
+endif
+
+SFML_ROOT := $(SFML_VENDOR)/$(SFML_PLATFORM)
+
+# Prefer vendored SFML; fall back to system defaults if not present
+ifneq ("$(wildcard $(SFML_ROOT)/include)","")
+	INC_PATH := $(SFML_ROOT)/include
+	LIB_PATH := $(SFML_ROOT)/lib
+	SFML_BIN := $(SFML_ROOT)/bin
+else
+	# System fallbacks (optional)
+	ifeq ($(OS),Windows_NT)
 		INC_PATH ?= /mingw64/include
 		LIB_PATH ?= /mingw64/lib
-	endif
-
-	ARCH =
-	RPATH =
-else
-	DEL = rm -f
-	Q = "
-
-	INC_PATH = /usr/local/include/
-	LIB_PATH = /usr/local/lib/
-
-	UNAME_S := $(shell uname -s)
-	ifeq ($(UNAME_S),Linux)
-		CXXFLAGS += -D LINUX
-		RPATH =
-	endif
-	ifeq ($(UNAME_S),Darwin)
-		TARGET_MAKEFILE = Makefile.osx
-		CXXFLAGS += -D OSX
-		RPATH = -Wl,-rpath,/Library/Frameworks
-	endif
-
-	UNAME_P := $(shell uname -p)
-	ifeq ($(UNAME_P),x86_64)
-		ARCH = 
-	endif
-	ifneq ($(filter %86,$(UNAME_P)),)
-		ARCH = 
-	endif
-	ifneq ($(filter arm%,$(UNAME_P)),)
-		ARCH = 
+		SFML_BIN ?= /mingw64/bin
+	else
+		INC_PATH ?= /usr/local/include
+		LIB_PATH ?= /usr/local/lib
 	endif
 endif
 
 INCLUDE_FLAGS = -I$(INC_PATH) -I$(INC_DIR) -I$(SRC_DIR)
 LIBS = -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio -lsfml-network
 
-# Default target: build + run
-all: build
+# Windows executable suffix
+ifeq ($(OS),Windows_NT)
+	TARGET := $(TARGET).exe
+endif
 
+# ---------------------------
+# Targets
+# ---------------------------
+all: build
 build: $(TARGET)
 
 $(TARGET): $(OBJECTS)
 	$(CXX) $(ARCH) -o $@ $^ $(RPATH) -L$(LIB_PATH) $(LIBS)
 
 .cpp.o:
-	$(CXX) $(CXXFLAGS) $(ARCH) $(CXXVERSION) -o $@ -c $< -I$(INC_PATH) -I$(INC_DIR) -I$(SRC_DIR)
+	$(CXX) $(CXXFLAGS) $(ARCH) $(CXXVERSION) -o $@ -c $< $(INCLUDE_FLAGS)
 
 clean:
 	$(DEL) $(TARGET) $(OBJECTS)
@@ -85,18 +87,31 @@ clean:
 depend:
 	@sed -i.bak '/^# DEPENDENCIES/,$$d' Makefile
 	@$(DEL) sed*
-	@echo $(Q)# DEPENDENCIES$(Q) >> Makefile
+	@echo "# DEPENDENCIES" >> Makefile
 	@$(CXX) -MM $(SRC_FILES) $(INCLUDE_FLAGS) >> Makefile
 
-# Where SFML DLLs live when using vendored SFML
-SFML_BIN := $(SFML_VENDOR)/bin
-SFML_BIN_POSIX := $(shell cygpath -u "$(CURDIR)/$(SFML_BIN)")
-
-run: $(TARGET)
-	@echo Running $(TARGET) with SFML DLLs from $(SFML_BIN)
-	@PATH="$(SFML_BIN_POSIX):$$PATH" ./$(TARGET)
+# ---------------------------
+# Run (keeps SFML runtime libs in vendor/sfml/...; no copying required)
+# ---------------------------
+ifeq ($(OS),Windows_NT)
+	# Avoid PATH breakage from C:/... by converting to /c/... form
+	SFML_BIN_POSIX := $(shell cygpath -u "$(CURDIR)/$(SFML_BIN)")
+	run: $(TARGET)
+		@echo Running $(TARGET) with SFML DLLs from $(SFML_BIN)
+		@PATH="$(SFML_BIN_POSIX):$$PATH" ./$(TARGET)
+else ifeq ($(UNAME_S),Linux)
+	run: $(TARGET)
+		@echo Running $(TARGET) with SFML libs from $(LIB_PATH)
+		@LD_LIBRARY_PATH="$(LIB_PATH):$$LD_LIBRARY_PATH" ./$(TARGET)
+else ifeq ($(UNAME_S),Darwin)
+	run: $(TARGET)
+		@echo Running $(TARGET) with SFML libs from $(LIB_PATH)
+		@DYLD_LIBRARY_PATH="$(LIB_PATH):$$DYLD_LIBRARY_PATH" ./$(TARGET)
+else
+	run:
+		@echo "Unsupported platform for 'run' target. Build with: make build"
+endif
 
 .PHONY: all build run clean depend
 
 # DEPENDENCIES
-src/main.o: src/main.cpp 
