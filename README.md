@@ -2,7 +2,7 @@
 
 A small Asteroids-style game written in C++ using SFML.
 <p align="center">
-  <img src="space-shooter/assets/screenshots/gameplay.png" width="600">
+  <img src="space-shooter/assets/screenshots/gameplay.PNG" width="600">
 </p>
 
 ---
