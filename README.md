@@ -9,9 +9,7 @@ This project is a small Asteroids-style game written in C++ using SFML. Clone re
 
 - C++ compiler (g++ recommended)
 - `make`
-- SFML 2.6.x
-  - This project uses a vendored SFML setup: you download SFML for your operating system and place it into the correct folder under `vendor/sfml/`.
-  - No Makefile edits are required.
+- SFML 2.6.x (follow instructions below)
 
 ---
 
