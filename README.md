@@ -25,7 +25,7 @@ No Makefile edits are required.
 
 2. Choose the build that matches your operating system:
     - Windows: `GCC 13.1.0 MinGW (SEH) - 64-bit`
-    - - macOS: Clang – `ARM64 (macOS 11+)`
+    - macOS: `Clang – ARM64 (macOS 11+)`
     - Linux: `GCC - 64-bit`
 
     ...and move it into the correct folder (follow OS specific instructions below):
