@@ -6,6 +6,9 @@ INC_DIR = include
 # ALL CPP COMPILABLE IMPLEMENTATION FILES THAT MAKE UP THE PROJECT
 SRC_FILES = $(addprefix $(SRC_DIR)/, main.cpp game.cpp kinematics.cpp spaceship.cpp asteroid.cpp gamedisplay.cpp bullet.cpp)
 
+# SFML
+SFML_VENDOR := vendor/sfml
+
 # NO EDITS NEEDED BELOW THIS LINE
 
 CXX = g++
@@ -20,16 +23,23 @@ ifeq ($(OS),Windows_NT)
 	DEL = rm -f
 	Q =
 
-	SYS_INC_PATH = C:/mingw64/mingw64/include
-	LIB_PATH = Z:/CSCI200/lib/
+	# Prefer SFML vendored next to the project
+	ifneq ("$(wildcard $(SFML_VENDOR)/include)","")
+		INC_PATH := $(SFML_VENDOR)/include
+		LIB_PATH := $(SFML_VENDOR)/lib
+	else
+		# Fallback if user didn't vendor SFML (MSYS2 default, optional)
+		INC_PATH ?= /mingw64/include
+		LIB_PATH ?= /mingw64/lib
+	endif
 
-	ARCH = 
+	ARCH =
 	RPATH =
 else
 	DEL = rm -f
 	Q = "
 
-	SYS_INC_PATH = /usr/local/include/
+	INC_PATH = /usr/local/include/
 	LIB_PATH = /usr/local/lib/
 
 	UNAME_S := $(shell uname -s)
@@ -64,7 +74,7 @@ $(TARGET): $(OBJECTS)
 	$(CXX) $(ARCH) -o $@ $^ $(RPATH) -L$(LIB_PATH) $(LIBS)
 
 .cpp.o:
-	$(CXX) $(CXXFLAGS) $(ARCH) $(CXXVERSION) -o $@ -c $< $(INCLUDE_FLAGS)
+	$(CXX) $(CXXFLAGS) $(ARCH) $(CXXVERSION) -o $@ -c $< -I$(INC_PATH) -Iinclude -Isrc
 
 clean:
 	$(DEL) $(TARGET) $(OBJECTS)
