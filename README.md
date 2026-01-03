@@ -24,10 +24,9 @@ No Makefile edits are required.
    https://www.sfml-dev.org/download.php
 
 2. Choose the build that matches your operating system:
-    - Windows: GCC / MinGW (SEH) – 64-bit
-    - Linux (64-bit): Linux → GCC – 64-bit
-    - macOS (Apple Silicon): Clang – ARM64 (macOS 11+)
-    - macOS (Intel): Clang – 64-bit (macOS 10.15+)
+    - Windows: `GCC 13.1.0 MinGW (SEH) - 64-bit`
+    - - macOS: Clang – `ARM64 (macOS 11+)`
+    - Linux: `GCC - 64-bit`
 
     ...and move it into the correct folder (follow OS specific instructions below):
     
