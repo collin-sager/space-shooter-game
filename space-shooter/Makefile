@@ -65,27 +65,38 @@ else
 	endif
 endif
 
-INCLUDE_FLAGS = -I$(SYS_INC_PATH) -I$(INC_DIR)
+INCLUDE_FLAGS = -I$(INC_PATH) -I$(INC_DIR) -I$(SRC_DIR)
 LIBS = -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio -lsfml-network
 
-all: $(TARGET)
+# Default target: build + run
+all: build
+
+build: $(TARGET)
 
 $(TARGET): $(OBJECTS)
 	$(CXX) $(ARCH) -o $@ $^ $(RPATH) -L$(LIB_PATH) $(LIBS)
 
 .cpp.o:
-	$(CXX) $(CXXFLAGS) $(ARCH) $(CXXVERSION) -o $@ -c $< -I$(INC_PATH) -Iinclude -Isrc
+	$(CXX) $(CXXFLAGS) $(ARCH) $(CXXVERSION) -o $@ -c $< -I$(INC_PATH) -I$(INC_DIR) -I$(SRC_DIR)
 
 clean:
 	$(DEL) $(TARGET) $(OBJECTS)
-	
+
 depend:
 	@sed -i.bak '/^# DEPENDENCIES/,$$d' Makefile
 	@$(DEL) sed*
 	@echo $(Q)# DEPENDENCIES$(Q) >> Makefile
 	@$(CXX) -MM $(SRC_FILES) $(INCLUDE_FLAGS) >> Makefile
 
-.PHONY: all clean depend
+# Where SFML DLLs live when using vendored SFML
+SFML_BIN := $(SFML_VENDOR)/bin
+SFML_BIN_POSIX := $(shell cygpath -u "$(CURDIR)/$(SFML_BIN)")
+
+run: $(TARGET)
+	@echo Running $(TARGET) with SFML DLLs from $(SFML_BIN)
+	@PATH="$(SFML_BIN_POSIX):$$PATH" ./$(TARGET)
+
+.PHONY: all build run clean depend
 
 # DEPENDENCIES
 src/main.o: src/main.cpp 
