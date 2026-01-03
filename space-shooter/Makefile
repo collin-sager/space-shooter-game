@@ -57,4 +57,66 @@ else
 	endif
 endif
 
-INCLUDE_FLAGS = -I$(INC_PATH) -I$(INC_DIR) -I_
+INCLUDE_FLAGS = -I$(INC_PATH) -I$(INC_DIR) -I$(SRC_DIR)
+LIBS = -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio -lsfml-network
+
+# Windows executable suffix
+ifeq ($(OS),Windows_NT)
+	TARGET := $(TARGET).exe
+endif
+
+# ---------------------------
+# Targets
+# ---------------------------
+all: build
+build: $(TARGET)
+
+$(TARGET): $(OBJECTS)
+	$(CXX) $(ARCH) -o $@ $^ $(RPATH) -L$(LIB_PATH) $(LIBS)
+
+.cpp.o:
+	$(CXX) $(CXXFLAGS) $(ARCH) $(CXXVERSION) -o $@ -c $< $(INCLUDE_FLAGS)
+
+clean:
+	$(DEL) $(TARGET) $(OBJECTS)
+
+depend:
+	@sed -i.bak '/^# DEPENDENCIES/,$$d' Makefile
+	@$(DEL) sed*
+	@echo "# DEPENDENCIES" >> Makefile
+	@$(CXX) -MM $(SRC_FILES) $(INCLUDE_FLAGS) >> Makefile
+
+# ---------------------------
+# Run (keeps SFML runtime libs in vendor/sfml/...; no copying required)
+# ---------------------------
+ifeq ($(OS),Windows_NT)
+
+# Avoid PATH breakage from C:/... by converting to /c/... form
+SFML_BIN_POSIX := $(shell cygpath -u "$(CURDIR)/$(SFML_BIN)")
+
+run: $(TARGET)
+	@echo Running $(TARGET) with SFML DLLs from $(SFML_BIN)
+	@PATH="$(SFML_BIN_POSIX):$$PATH" ./$(TARGET)
+
+else ifeq ($(UNAME_S),Linux)
+
+run: $(TARGET)
+	@echo Running $(TARGET) with SFML libs from $(LIB_PATH)
+	@LD_LIBRARY_PATH="$(LIB_PATH):$$LD_LIBRARY_PATH" ./$(TARGET)
+
+else ifeq ($(UNAME_S),Darwin)
+
+run: $(TARGET)
+	@echo Running $(TARGET) with SFML libs from $(LIB_PATH)
+	@DYLD_LIBRARY_PATH="$(LIB_PATH):$$DYLD_LIBRARY_PATH" ./$(TARGET)
+
+else
+
+run:
+	@echo "Unsupported platform for 'run' target. Build with: make build"
+
+endif
+
+.PHONY: all build run clean depend
+
+# DEPENDENCIES
