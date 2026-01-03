@@ -1,6 +1,9 @@
 # 1. Introduction
 
 A small Asteroids-style game written in C++ using SFML.
+<p align="center">
+  <img src="assets/screenshots/gameplay.png" width="600">
+</p>
 
 ---
 
