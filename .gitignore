@@ -15,3 +15,6 @@ dist/
 Thumbs.db
 .vscode/
 .idea/
+
+# user specific
+scores.txt
