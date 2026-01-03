@@ -1,13 +1,11 @@
 # 1. Introduction
 
-A small Asteroids-style game written in C++ using SFML.
+This project is a small Asteroids-style game written in C++ using SFML. Clone repo and install SFML following instructions below (should take <5 min) to play!
 <p align="left">
   <img src="space-shooter/assets/screenshots/gameplay.PNG" width="450">
 </p>
 
----
-
-# 2. Requirements
+## Requirements
 
 - C++ compiler (g++ recommended)
 - `make`
@@ -17,40 +15,37 @@ A small Asteroids-style game written in C++ using SFML.
 
 ---
 
-# 3. Project Structure
-
-    space-shooter/
-    ├── src/
-    ├── include/
-    ├── assets/
-    ├── vendor/
-    │   └── sfml/
-    │       ├── windows-mingw64/
-    │       ├── linux-x86_64/
-    │       ├── macos-x86_64/
-    │       └── macos-arm64/
-    └── Makefile
-
----
-
-# 4. Installing SFML
+# 2. Installing SFML
 
 SFML is downloaded manually and placed inside the vendor/sfml/ directory.  
 No Makefile edits are required.
 
-Download SFML 2.6.x from:
-https://www.sfml-dev.org/download.php
+1. Download SFML 2.6.x from:  
+   https://www.sfml-dev.org/download.php
 
-Choose the build that matches your operating system:
+2. Choose the build that matches your operating system:
+    - Windows: GCC / MinGW (SEH) – 64-bit
+    - Linux (64-bit): Linux → GCC – 64-bit
+    - macOS (Apple Silicon): Clang – ARM64 (macOS 11+)
+    - macOS (Intel): Clang – 64-bit (macOS 10.15+)
 
-- Windows: GCC / MinGW (SEH) – 64-bit
-- Linux (64-bit): Linux → GCC – 64-bit
-- macOS (Apple Silicon): Clang – ARM64 (macOS 11+)
-- macOS (Intel): Clang – 64-bit (macOS 10.15+)
+    ...and move it into the correct folder (follow OS specific instructions below):
+    
+        space-shooter/
+        ├── src/
+        ├── include/
+        ├── assets/
+        ├── vendor/
+        │   └── sfml/
+        │       ├── windows-mingw64/
+        │       ├── linux-x86_64/
+        │       ├── macos-x86_64/
+        │       └── macos-arm64/
+        └── Makefile
 
 ---
 
-<u>Windows (MinGW / g++)</u>
+Windows (MinGW / g++)
 1. Extract the SFML zip.
 2. Copy the contents:
    ```text
@@ -59,7 +54,7 @@ Choose the build that matches your operating system:
     SFML-2.6.x/bin/     -> space-shooter/vendor/sfml/windows-mingw64/bin/
 ---
 
-<u>Linux</u>
+<u>Linux
 1. Extract the SFML archive.
 2. Copy the contents:
    ```text
@@ -67,7 +62,7 @@ Choose the build that matches your operating system:
     SFML-2.6.x/lib/     -> space-shooter/vendor/sfml/linux-x86_64/lib/
 ---
 
-<u>macOS</u>
+macOS
 1. Extract the SFML archive.
 2. Copy the contents:
    ```text
@@ -75,7 +70,7 @@ Choose the build that matches your operating system:
     SFML-2.6.x/lib/     -> space-shooter/vendor/sfml/macos-arm64/lib/
 ---
 
-# 5. Build and Run
+# 3. Build and Run
 
 From the project root:
 
